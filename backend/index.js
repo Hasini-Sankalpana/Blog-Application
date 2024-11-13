@@ -1,9 +1,12 @@
 import { config } from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import userRouter from './routes/userRoute.js'
 import authRouter from './routes/authRoute.js'
+
+
 
 
 dotenv.config();
@@ -18,6 +21,11 @@ mongoose.connect(process.env.MONGO)
 
 
 const app = express ();
+
+app.use(cors({
+    origin: 'http://localhost:5173'
+  }));
+  
 
 app.use(express.json());
 
