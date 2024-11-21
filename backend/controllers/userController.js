@@ -1,11 +1,39 @@
 import cloudinary from "../utils/cloudinary.js";
 import User from "../models/userModel.js";
+import bcryptjs from 'bcryptjs';
+import { errorHandler } from '../utils/error.js';
 
 export const updateProfile = async (req, res, next) => {
   const { userId } = req.params;
-  const { username, email } = req.body;
+  const { username, email,password  } = req.body;
 
   try {
+
+    if (password) {
+      if (password.length < 6) {
+        return next(errorHandler(400, 'Password must be at least 6 characters'));
+      }
+      req.body.password = bcryptjs.hashSync(password, 10);
+    }
+
+    // Validate username
+    if (username) {
+      if (username.length < 5 || username.length > 20) {
+        return next(errorHandler(400, 'Username must be between 7 and 20 characters'));
+      }
+      if (username.includes(' ')) {
+        return next(errorHandler(400, 'Username cannot contain spaces'));
+      }
+      if (username !== username.toLowerCase()) {
+        return next(errorHandler(400, 'Username must be lowercase'));
+      }
+      if (!username.match(/^[a-zA-Z0-9]+$/)) {
+        return next(
+          errorHandler(400, 'Username can only contain letters and numbers')
+        );
+      }
+    }
+
     let profilePictureUrl = null;
 
     // Check if a file is uploaded
@@ -20,9 +48,10 @@ export const updateProfile = async (req, res, next) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
-        username,
-        email,
+        ...(username && { username }),
+        ...(email && { email }),
         ...(profilePictureUrl && { profilePicture: profilePictureUrl }),
+        ...(password && { password: req.body.password }),
       },
       { new: true }
     );

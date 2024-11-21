@@ -13,6 +13,7 @@ const DashProfile = () => {
   const [imageFileUrl, setImageFileUrl] = useState(currentUser?.profilePicture || null);
   const [username, setUsername] = useState(currentUser?.username || '');
   const [email, setEmail] = useState(currentUser?.email || '');
+  const [password, setPassword] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0); // Uploading state
@@ -28,6 +29,7 @@ const DashProfile = () => {
 
       const userData = response.data;
       dispatch(signInSuccess(userData));
+
       setUsername(userData.username);
       setEmail(userData.email);
       setImageFileUrl(userData.profilePicture);
@@ -51,6 +53,7 @@ const DashProfile = () => {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('email', email);
+    if (password) formData.append('password', password);
   
     // Check if a new image is being uploaded
     const isImageUpload = !!imageFile;
@@ -84,8 +87,10 @@ const DashProfile = () => {
       dispatch(signInSuccess(response.data.user));
       setUsername(response.data.user.username);
       setEmail(response.data.user.email);
+      setPassword(''); 
+
       setImageFileUrl(response.data.user.profilePicture);
-  
+     
       
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -152,10 +157,22 @@ const DashProfile = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+         <TextInput 
+         type='password'
+        id='password' 
+        placeholder='password'
+        onChange={(e) => setPassword(e.target.value)}
+         />
+
+
         <Button type="submit" gradientDuoTone="purpleToBlue" outline disabled={isUpdating}>
           {isUpdating ? 'Updating...' : 'Update'}
         </Button>
       </form>
+      <div className="text-red-500 flex justify-between mt-5">
+        <span className='cursor-pointer'>Delete Account</span>
+        <span className='cursor-pointer'>Sign Out</span>
+      </div>
     </div>
   );
 };

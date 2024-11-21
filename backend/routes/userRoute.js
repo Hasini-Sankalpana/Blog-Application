@@ -2,6 +2,7 @@ import express from 'express';
 import { getUserProfile, test, updateProfile } from '../controllers/userController.js';
 import { upload } from '../middlewares/fileUpload.js';
 
+
 const userRouter = express.Router();
 
 userRouter.get('/test', test)
