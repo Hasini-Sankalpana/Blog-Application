@@ -89,3 +89,15 @@ export const getUserProfile = async (req, res, next) => {
 export const test = (req,res) => {
     res.json({message:'API working !'});
 };
+
+export const deleteUser = async(req,res,next) => {
+  if (req.user.id !== req.params.userId) {
+    return next (errorHandler(403,'You are not allowedto delete this user !'))
+  }
+  try {
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json({message:'User deleted successfully !'});
+  } catch (error) {
+    next(error);
+  }
+}
